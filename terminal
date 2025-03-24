@@ -1,0 +1,9 @@
+mkdir mock-interview-backend
+cd mock-interview-backend
+npm init -y 
+
+npx create-react-app mock-interview-frontend
+cd mock-interview-frontend
+npm install @mui/material @emotion/react @emotion/styled axios react-router-dom @monaco-editor/react framer-motion react-icons @emotion/styled typewriter-effect 
+mkdir -p src/pages/Landing
+touch src/pages/Landing/index.jsx 
