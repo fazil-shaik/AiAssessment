@@ -26,18 +26,20 @@ exports.submitCode = async (req, res) => {
     console.log('Execution result:', executionResult);
 
     // Get AI feedback
-    console.log('Getting AI feedback...');
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: "You are a senior software engineer reviewing code submissions."
-        },
-        {
-          role: "user",
-          content: `Please review this ${language} code:
-          
+    let feedback;
+    try {
+      console.log('Getting AI feedback...');
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "You are a senior software engineer reviewing code submissions."
+          },
+          {
+            role: "user",
+            content: `Please review this ${language} code:
+            
 Code:
 ${code}
 
@@ -53,15 +55,25 @@ Please provide feedback on:
 3. Code style and best practices
 4. Potential improvements
 5. Edge cases to consider`
-        }
-      ]
-    });
-    console.log('AI feedback received');
+          }
+        ]
+      });
+      feedback = completion.choices[0].message.content;
+      console.log('AI feedback received');
+    } catch (aiError) {
+      console.error('AI feedback error:', aiError);
+      feedback = `Boilerplate Feedback:
+1. Code correctness: Ensure your code handles all edge cases and inputs.
+2. Time and space complexity: Analyze the complexity and optimize if necessary.
+3. Code style and best practices: Follow standard coding conventions and best practices.
+4. Potential improvements: Consider refactoring for clarity and efficiency.
+5. Edge cases to consider: Test with various inputs to ensure robustness.`;
+    }
 
     return res.json({
       status: 'success',
       executionResult,
-      feedback: completion.choices[0].message.content
+      feedback
     });
   } catch (error) {
     console.error('Submission error:', {
