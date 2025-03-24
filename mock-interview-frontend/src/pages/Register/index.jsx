@@ -30,11 +30,36 @@ function Register() {
     setLoading(true);
 
     try {
+      if (!formData.name.trim()) {
+        throw new Error('Name is required');
+      }
+      if (!formData.email.trim()) {
+        throw new Error('Email is required');
+      }
+      if (formData.password.length < 6) {
+        throw new Error('Password must be at least 6 characters long');
+      }
+
       const response = await api.post('/register', formData);
+      if (!response.data) {
+        throw new Error('No response from server');
+      }
       login(response.data.user, response.data.token);
       navigate('/');
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to register');
+      if (error.response?.status === 500) {
+        setError('Server error. Please try again later.');
+        console.error('Server Error Details:', error.response?.data);
+      } else if (error.response?.status === 400) {
+        setError(error.response.data.message || 'Invalid input data');
+      } else if (error.response?.status === 409) {
+        setError('Email already exists');
+      } else if (error.message) {
+        setError(error.message);
+      } else {
+        setError('Registration failed. Please try again later.');
+      }
+      console.error('Registration error:', error);
     } finally {
       setLoading(false);
     }
