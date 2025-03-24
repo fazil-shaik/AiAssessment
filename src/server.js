@@ -28,6 +28,10 @@ app.use((err, req, res, next) => {
 // Routes
 app.use('/api', routes);
 
+app.get('/',(req,res)=>{
+  res.send("server working fine")
+})
+
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
