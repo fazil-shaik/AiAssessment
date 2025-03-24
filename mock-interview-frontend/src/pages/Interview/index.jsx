@@ -723,7 +723,7 @@ function Interview() {
     setFeedback(null);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/submissions', {
+      const response = await axios.post('https://aiassessment.onrender.com/api/submissions', {
         code,
         language,
         questionId: jobId
