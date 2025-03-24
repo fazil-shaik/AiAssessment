@@ -5,10 +5,18 @@ exports.register = async (req, res, next) => {
   try {
     const { email, password, name } = req.body;
 
+    // Input validation
+    if (!email || !password || !name) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please provide email, password and name'
+      });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
+      return res.status(409).json({
         status: 'error',
         message: 'Email already registered'
       });
@@ -36,7 +44,12 @@ exports.register = async (req, res, next) => {
       }
     });
   } catch (error) {
-    next(error);
+    console.error('Registration error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
